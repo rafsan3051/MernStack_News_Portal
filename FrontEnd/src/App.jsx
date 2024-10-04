@@ -1,34 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import MainLayout from "./dashboard/layout/MainLayout"
+import AdminIndex from "./dashboard/pages/AdminIndex"
+import Login from "./dashboard/pages/Login"
+import ProtectDashboard from "./middleware/ProtectDashboard"
+import ProtectRole from "./middleware/ProtectRole"
+import Unable from "./dashboard/pages/Unable"
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div className='bg-black'>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<ProtectDashboard />}>
+          <Route path="" element={<MainLayout />}>
+            <Route path="" element={<Navigate to="/dashboard/admin" />} />
+            <Route path="unable-to-access" element={< Unable />} />
+            <Route path="" element={<ProtectRole  role = 'admin' />}>
+              <Route path="admin" element={<AdminIndex />} />
+            </Route>
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
