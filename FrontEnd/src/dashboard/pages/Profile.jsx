@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaImage } from "react-icons/fa6";
+import { FaImage } from "react-icons/fa6"
 
 const Profile = () => {
   return (
