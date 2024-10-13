@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { base_url } from "../../config/config"
 import axios from "axios"
+import {useNavigate} from 'react-router-dom'
 import toast from "react-hot-toast"
+import storeContext from '../../context/storeContext'
 
 const Login = () => {
+
+  const navigate = useNavigate()
+  const {dispatch} = useContext(storeContext)
 
   const [loader,setLoader] = useState(false)
   const [state,setState] = useState({
@@ -22,10 +27,21 @@ const Login = () => {
     const submit = async(e)=> {
       e.preventDefault()
       try {
+        setLoader(true)
         const {data} = await axios.post(`${base_url}/api/login`,state)
-        console.log(data)
+        setLoader(false)
+        localStorage.setItem('newsToken', data.token)
+        toast.success(data.message)
+        dispatch({
+          type : "Logged_in_successfully",
+          payload: {
+            token: data.token
+          }
+        })
+          navigate('/dashboard')
       } catch (error) {
-        console.log(error)
+        setLoader(false)
+        toast.error(error.response.data.message)
       }
     }
 
@@ -50,8 +66,8 @@ const Login = () => {
          border-gray-300 focus:border-green-500 h-10' id='password'/>
             </div>
             <div className='mt-4'>
-          <button className='px-3 py-[6px] w-full bg-black rounded-sm text-white
-           hover:bg-black'>Login</button>
+          <button disabled = {loader} className='px-3 py-[6px] w-full bg-black rounded-sm text-white
+           hover:bg-black'>{loader ? "loading..." : 'Login'}</button>
           </div>
               </form>
         </div>
